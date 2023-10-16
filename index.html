@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            width: 150px;
+            padding: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <label for="outTime">Out Time (HH:MM:SS AM/PM): </label>
+        <input type="text" id="outTime" placeholder="e.g., 1:28:33 PM" required>
+        <br>
+        <label for="totalPresentHours">Total Present Hours (e.g., 2H 25M): </label>
+        <input type="text" id="totalPresentHours" placeholder="e.g., 2H 25M" required>
+        <br>
+        <button onclick="calculateCompletionTime()">Calculate Completion Time</button>
+        <p id="completionTime"></p>
+    </div>
+
+    <script>
+        function calculateCompletionTime() {
+            const outTimeInput = document.getElementById("outTime").value;
+            const totalPresentHoursInput = document.getElementById("totalPresentHours").value;
+            const completionTimeOutput = document.getElementById("completionTime");
+
+            // Parse the out time
+            const outTime = parseTime(outTimeInput);
+
+            // Parse total present hours
+            const totalPresentHours = parseTotalPresentHours(totalPresentHoursInput);
+
+            // Calculate the completion time (considering 8.30 hours of work and subtracting the time already worked)
+            const completionTime = new Date(outTime.getTime() + (8.5 * 60 * 60 * 1000) - totalPresentHours);
+
+            // Extract hours, minutes, and seconds
+            let hours = completionTime.getHours();
+            let minutes = completionTime.getMinutes();
+            let seconds = completionTime.getSeconds();
+
+            // Format hours, minutes, and seconds as text
+            const ampm = hours >= 12 ? "PM" : "AM";
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 should be displayed as 12
+
+            const formattedTime = hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + " " + ampm;
+            completionTimeOutput.textContent = "Completion Time: " + formattedTime;
+        }
+
+        // Custom function to parse time in HH:MM:SS AM/PM format
+        function parseTime(input) {
+            const timeParts = input.match(/(\d+):(\d+):(\d+)\s?([APap][Mm])?/);
+            if (!timeParts) {
+                throw new Error("Invalid time format");
+            }
+
+            let hours = parseInt(timeParts[1]);
+            const minutes = parseInt(timeParts[2]);
+            const seconds = parseInt(timeParts[3]);
+            const ampm = timeParts[4];
+
+            if (ampm) {
+                if (ampm.toLowerCase() === "pm" && hours < 12) {
+                    hours += 12;
+                } else if (ampm.toLowerCase() === "am" && hours === 12) {
+                    hours = 0;
+                }
+            }
+
+            const time = new Date();
+            time.setHours(hours, minutes, seconds, 0);
+
+            return time;
+        }
+
+        // Custom function to parse total present hours in the format "2H 25M"
+        function parseTotalPresentHours(input) {
+            const timeParts = input.match(/(\d+)H\s*(\d+)M/);
+            if (!timeParts) {
+                throw new Error("Invalid time format");
+            }
+
+            const hours = parseInt(timeParts[1]);
+            const minutes = parseInt(timeParts[2]);
+
+            return (hours * 60 + minutes) * 60 * 1000;
+        }
+    </script>
+</body>
+</html>
+
