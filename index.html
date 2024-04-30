@@ -51,8 +51,8 @@
             // Parse total present hours
             const totalPresentHours = parseTotalPresentHours(totalPresentHoursInput);
 
-            // Calculate the completion time (considering 8.30 hours of work and subtracting the time already worked)
-            const completionTime = new Date(outTime.getTime() + (8.5 * 60 * 60 * 1000) - totalPresentHours);
+            // Calculate the completion time (considering 8 hours of work and subtracting the time already worked)
+            const completionTime = new Date(outTime.getTime() + (8 * 60 * 60 * 1000) - totalPresentHours);
 
             // Extract hours, minutes, and seconds
             let hours = completionTime.getHours();
@@ -109,4 +109,5 @@
     </script>
 </body>
 </html>
+
 
